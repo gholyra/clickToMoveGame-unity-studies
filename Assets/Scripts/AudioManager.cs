@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-enum SFX
+public enum SFX
 {
-
+    click,
+    shoot
 }
 
 [Serializable]
@@ -13,7 +13,7 @@ struct SFXConfig
 {
     public SFX Type;
     public float VolumeScale;
-    public AudioClip audioClip;
+    public AudioClip AudioClip;
 }
 
 public class AudioManager : MonoBehaviour
@@ -26,11 +26,24 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        SFXs = SFXConfigs.ToDictionary(sfxConfig => sfxConfig.Type, sfxConfig => sfxConfig);
+        // SFXs = SFXConfigs.ToDictionary(sfxConfig => sfxConfig.Type, sfxConfig => sfxConfig);
+
+        foreach (SFXConfig config in SFXConfigs)
+        {
+            SFXs.Add(config.Type, config);
+        }
     }
 
-    private void PlaySFX(SFX type)
+    public void PlaySFX(SFX type)
     {
-
+        if (SFXs.ContainsKey(type))
+        {
+            SFXConfig config = SFXs[type];
+            SFXAudioSource.PlayOneShot(config.AudioClip, config.VolumeScale);
+        }
+        else
+        {
+            Debug.LogError($"Failed to play sound of type {type}");
+        }
     }
 }
