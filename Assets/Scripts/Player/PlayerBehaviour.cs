@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem.HID;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class PlayerBehaviour : MonoBehaviour
@@ -22,20 +23,42 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.InputManager.OnPlayerMove += HandlePlayerMovement;
+        GameManager.Instance.InputManager.OnPlayerMove += HandleClick;
     }
 
-    private void HandlePlayerMovement()
+    private void HandleClick()
     {
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100f))
         {
-            agent.SetDestination(hit.point);
-            if (clickParticle != null)
+            if (hit.collider.CompareTag("Enemy"))
             {
-                ParticleSystem particle = Instantiate(clickParticle, hit.point, clickParticle.transform.rotation);
-                Destroy(particle.gameObject, 0.5f);
+                HandleAttack();
             }
-            GameManager.Instance.AudioManager.PlaySFX(SFX.click);
+            else
+            {
+                HandleMovement(hit);
+            }
         }
+    }
+
+    private void HandleMovement(RaycastHit hit)
+    {
+        agent.SetDestination(hit.point);
+        if (clickParticle != null)
+        {
+            ParticleSystem particle = Instantiate(clickParticle, hit.point, clickParticle.transform.rotation);
+            Destroy(particle.gameObject, 0.5f);
+        }
+        GameManager.Instance.AudioManager.PlaySFX(SFX.click);
+    }
+
+    private void HandleAttack()
+    {
+        
+    }
+
+    public NavMeshAgent GetPlayerAgent()
+    {
+        return agent;
     }
 }
