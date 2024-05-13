@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem.HID;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class PlayerBehaviour : MonoBehaviour
@@ -10,8 +9,9 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float acceleration;
     [SerializeField] private float turnSpeed;
-
+    [SerializeField] private LayerMask attackLayer;
     [SerializeField] private ParticleSystem clickParticle;
+    [SerializeField] private FireBall spell;
 
     private void Awake()
     {
@@ -32,13 +32,20 @@ public class PlayerBehaviour : MonoBehaviour
         {
             if (hit.collider.CompareTag("Enemy"))
             {
-                HandleAttack();
+                HandleAttack(hit);
             }
             else
             {
                 HandleMovement(hit);
             }
         }
+    }
+
+    private void HandleAttack(RaycastHit hit)
+    {
+        GetComponent<Animator>().SetTrigger("attack");
+        transform.LookAt(hit.point);
+        Instantiate(spell, transform.position, transform.rotation);
     }
 
     private void HandleMovement(RaycastHit hit)
@@ -50,11 +57,6 @@ public class PlayerBehaviour : MonoBehaviour
             Destroy(particle.gameObject, 0.5f);
         }
         GameManager.Instance.AudioManager.PlaySFX(SFX.click);
-    }
-
-    private void HandleAttack()
-    {
-        
     }
 
     public NavMeshAgent GetPlayerAgent()
