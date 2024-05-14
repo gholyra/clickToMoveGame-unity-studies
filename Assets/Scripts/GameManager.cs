@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,9 +8,16 @@ public class GameManager : MonoBehaviour
 
     public AudioManager AudioManager;
 
+    [SerializeField] private PlayerBehaviour playerBehaviour;
+    
     private void Awake()
     {
         Instance = this;
         InputManager = new InputManager();
+    }
+
+    public NavMeshAgent GetPlayerNavMeshAgent()
+    {
+        return playerBehaviour.GetPlayerAgent();
     }
 }

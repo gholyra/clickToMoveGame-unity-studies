@@ -43,6 +43,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void HandleAttack(RaycastHit hit)
     {
+        Debug.Log("Attacking");
         GetComponent<Animator>().SetTrigger("attack");
         transform.LookAt(hit.point);
         Instantiate(spell, transform.position, transform.rotation);
